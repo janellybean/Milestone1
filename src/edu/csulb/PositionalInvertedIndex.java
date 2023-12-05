@@ -60,7 +60,8 @@ public class PositionalInvertedIndex {
 			String normalizedQuery = processor.normalizeType(processedQuery);
 			//then we can search the index
 			for (Posting p : index.getPostings(normalizedQuery)) {
-				System.out.println("Document " + corpus.getDocument(p.getDocumentId()).getTitle());
+				System.out.println("Document " + corpus.getDocument(p.getDocumentId()).getTitle() + " contains the term " + query);
+				System.out.println("The term " + query + " appears at position(s): " + p.getPositions());
 			}
 		}
 		scanner.close();
@@ -74,26 +75,16 @@ public class PositionalInvertedIndex {
 
 		// First, build the vocabulary hash set.
 		for (Document d : corpus.getDocuments()) {
+			//make count for the position of the term
+			int position = 1;
 			System.out.println("Found document " + d.getTitle());
-			// TODO:
-			// Tokenize the document's content by constructing an EnglishTokenStream around the document's content.
-			// Iterate through the tokens in the document, processing them using a BasicTokenProcessor,
-			//		and adding them to the HashSet vocabulary.
-
 			//iterate through tokens
 			EnglishTokenStream ets = new EnglishTokenStream(d.getContent());
 			for (String token : ets.getTokens()) {
-				//process tokens
 				List<String> processedTokens = processor.processToken(token);
-
-				//take processed tokens and normalize
 				String normalizedToken = processor.normalizeType(processedTokens);
-                
-				//print out each term that gets normalized
-				//System.out.println(normalizedToken);
-
-				//add the normalized terms to the inverted index
-				invertedIndex.addTerm(normalizedToken, d.getId());
+				invertedIndex.addTerm(normalizedToken, d.getId(), position);
+				position++;
 			}
 		}
         return invertedIndex;

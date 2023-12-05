@@ -6,6 +6,7 @@ import java.util.*;
  * Implements an Index using an inverted index.
  */
 public class PosInvertedIndex implements Index{
+    //Map that should take in a String term and List with documentId and position
     private final Map<String, List<Posting>> iIndex;
     private final List<String> iVocabulary;
     private final int iCorpusSize;
@@ -35,26 +36,32 @@ public class PosInvertedIndex implements Index{
 
     //addTerm method must run in O(1) time
     //careful not to add duplicate postings using documentId
-    public void addTerm(String term, int documentId) {
+    //edited so it tracks positions of terms in the document
+    public void addTerm(String term, int documentId, int position) {
         //get the list of postings for the term
-        List<Posting> postings = iIndex.get(term); 
+        List<Posting> postings = iIndex.get(term);
 
-        // If the term is not found in the index, create a new list.
-        if (postings == null) {
-            postings = new ArrayList<>();
-            iIndex.put(term, postings);
-        }
+        //if the list is not null, then add the posting to the list
+        if(postings != null) {
+            //get the last posting in the list
+            Posting lastPost = postings.get(postings.size() - 1);
 
-        // Use a list to check if the documentId is already in the postings list.
-        for (Posting p : postings) {
-            if (p.getDocumentId() == documentId) {
-                return;
+            //if the last posting's documentId is not the same as the current documentId
+            //then add the posting to the list
+            if(lastPost.getDocumentId() != documentId) {
+                postings.add(new Posting(documentId, position));
+            }
+            //else, add the position to the last posting
+            else {
+                lastPost.addPosition(position);
             }
         }
-        
-        // If the documentId is not in the postings list, add it.
-        postings.add(new Posting(documentId));
-        
+        //else, create a new list of postings for the term and add the posting to the list
+        else {
+            List<Posting> newPostings = new ArrayList<>();
+            newPostings.add(new Posting(documentId, position));
+            iIndex.put(term, newPostings);
+        }
     }
 
     /**
