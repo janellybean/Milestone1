@@ -27,6 +27,14 @@ public class AndQuery implements QueryComponent {
 		
 		// TODO: program the merge for an AndQuery, by gathering the postings of the composed QueryComponents and
 		// intersecting the resulting postings.
+		for(QueryComponent component : mComponents) {
+			if(result == null)
+				return component.getPostings(index);
+			else {
+				List<Posting> temp = component.getPostings(index);
+				result.retainAll(temp);
+			}
+		}
 		
 		return result;
 	}

@@ -13,6 +13,8 @@ import cecs429.documents.Document;
 import cecs429.documents.DocumentCorpus;
 import cecs429.indexing.Index;
 import cecs429.indexing.Posting;
+import cecs429.querying.BooleanQueryParser;
+import cecs429.querying.QueryComponent;
 import cecs429.indexing.PosInvertedIndex;
 import cecs429.text.BasicTokenProcessor;
 import cecs429.text.EnglishTokenStream;
@@ -58,11 +60,20 @@ public class PositionalInvertedIndex {
 			List<String> processedQuery = processor.processToken(query);
 			//then put it in the cleaner
 			String normalizedQuery = processor.normalizeType(processedQuery);
+
+			//implement the BooleanQueryParser
+			QueryComponent q = BooleanQueryParser.parseQuery(normalizedQuery);
+
 			//then we can search the index
-			for (Posting p : index.getPostings(normalizedQuery)) {
-				System.out.println("Document " + corpus.getDocument(p.getDocumentId()).getTitle() + " contains the term " + query);
-				System.out.println("The term " + query + " appears at position(s): " + p.getPositions());
+			//we use QueryComponent to get the postings, which uses index as the source
+			//q.getPostings(index);
+			int count = 0;
+			for (Posting p : q.getPostings(index)) {
+				//count the number of documents printed
+				count++;
+				System.out.println("Document " + corpus.getDocument(p.getDocumentId()).getTitle());
 			}
+			System.out.println(count + " documents found.");
 		}
 		scanner.close();
 	}

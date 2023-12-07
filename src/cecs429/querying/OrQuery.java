@@ -23,6 +23,14 @@ public class OrQuery implements QueryComponent {
 		
 		// TODO: program the merge for an OrQuery, by gathering the postings of the composed QueryComponents and
 		// unioning the resulting postings.
+		for(QueryComponent component : mComponents) {
+			if(result == null)
+				return component.getPostings(index);
+			else {
+				List<Posting> temp = component.getPostings(index);
+				result.addAll(temp);
+			}
+		}
 		
 		return result;
 	}
