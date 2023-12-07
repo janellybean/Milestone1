@@ -37,30 +37,30 @@ public class PosInvertedIndex implements Index{
     //addTerm method must run in O(1) time
     //careful not to add duplicate postings using documentId
     //edited so it tracks positions of terms in the document
-    public void addTerm(String term, int documentId, int position) {
+    //each posting has the string term and a list of positions
+    public void addTerm(String term, int docId, int position) {
+        //if the term is not in the vocabulary, add it
+        if(!iIndex.containsKey(term)) {
+            iVocabulary.add(term);
+            iIndex.put(term, new ArrayList<>());
+        }
+
         //get the list of postings for the term
         List<Posting> postings = iIndex.get(term);
-
-        //if the list is not null, then add the posting to the list
-        if(postings != null) {
-            //get the last posting in the list
-            Posting lastPost = postings.get(postings.size() - 1);
-
-            //if the last posting's documentId is not the same as the current documentId
-            //then add the posting to the list
-            if(lastPost.getDocumentId() != documentId) {
-                postings.add(new Posting(documentId, position));
-            }
-            //else, add the position to the last posting
-            else {
-                lastPost.addPosition(position);
-            }
+        
+        //if the list is empty, add the posting
+        if(postings.isEmpty()) {
+            postings.add(new Posting(docId, position));
+            return;
         }
-        //else, create a new list of postings for the term and add the posting to the list
-        else {
-            List<Posting> newPostings = new ArrayList<>();
-            newPostings.add(new Posting(documentId, position));
-            iIndex.put(term, newPostings);
+
+        //if the list is not empty, check if the posting already exists
+        //if it does, add the position to the posting
+        for(Posting p : postings) {
+            if(p.getDocumentId() == docId) {
+                p.addPosition(position);
+                return;
+            }
         }
     }
 

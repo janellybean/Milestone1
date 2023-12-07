@@ -72,6 +72,8 @@ public class PositionalInvertedIndex {
 				//count the number of documents printed
 				count++;
 				System.out.println("Document " + corpus.getDocument(p.getDocumentId()).getTitle());
+				//print the positions of the term in the document
+				System.out.println("Positions: " + p.getPositions());
 			}
 			System.out.println(count + " documents found.");
 		}
