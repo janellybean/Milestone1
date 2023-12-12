@@ -1,27 +1,19 @@
 package cecs429.indexing;
 
-import java.sql.Array;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * A Posting encapulates a document ID associated with a search query component.
- * 
- * TODO: add the list of positions of a posting.
+ * Updated to represent a list of positions for each posting
+ * The posting will look like this: (docId, [pos1, pos2, ...])
  */
 public class Posting {
 	private int mDocumentId;
-	private List<Integer> positions;
-	
-	public Posting(int documentId) {
-		mDocumentId = documentId;
-		this.positions = new ArrayList<>();
-	}
+	private List<Integer> mPositions;
 
-	public Posting(int documentId, int position) {
-		mDocumentId = documentId;	
-		this.positions = new ArrayList<>();
-		positions.add(position);
+	public Posting(int documentId, List<Integer> positions) {
+		mDocumentId = documentId;
+		mPositions = positions;
 	}
 	
 	public int getDocumentId() {
@@ -29,13 +21,7 @@ public class Posting {
 	}
 
 	public List<Integer> getPositions() {
-		return positions;
+		return mPositions;
 	}
-
-	//addPosition method to add the position to a list of positions
-	//this is the second parameter of the Posting
-	public void addPosition(int position) {
-		this.positions.add(position);
-	}
-
+	
 }

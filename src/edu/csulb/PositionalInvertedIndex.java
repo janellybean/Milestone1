@@ -37,7 +37,6 @@ public class PositionalInvertedIndex {
 		System.out.println("Enter the document path: ");
 		Scanner fileScanner = new Scanner(System.in);
 		String filePath = fileScanner.nextLine();
-		System.out.println(filePath);
 
 		fileScanner.close();
 
@@ -58,18 +57,38 @@ public class PositionalInvertedIndex {
 		// Make a token processor just to process the query 
 		BasicTokenProcessor processor = new BasicTokenProcessor();
 
-		//ask the user
-		Scanner scanner = new Scanner(System.in);
-		System.out.println("Enter a term to search or type 'quit' to exit: ");
-		String query = scanner.nextLine();
-		while(query != "quit") {
-			//use the process token on the query string
-			List<String> processedQuery = processor.processToken(query);
-			//then put it in the cleaner
-			String normalizedQuery = processor.normalizeType(processedQuery);
+		StringBuilder query;
+		while(true) {
+			System.out.println("Enter a term to search or type 'quit': ");
+			Scanner scanner = new Scanner(System.in);
+			query = new StringBuilder(scanner.nextLine());
+
+			//if the query is multiple words, split
+			String[] querySplit = query.toString().split(" ");
+
+			for (String queryWord : querySplit) {
+				//process the token (aka clean it)
+				List<String> processedTokens = processor.processToken(queryWord);
+				for (String finalToken : processedTokens) {
+					//normalize the token (aka stem it)
+					finalToken = processor.normalizeType(processedTokens);
+					//add the term to the inverted index
+					System.out.println(finalToken);
+				}
+			}
+			
+			//if the word is quit, then quit
+			if(query.toString().equals("quit")) {
+				break;
+			}
+
+			// //use the process token on the query string
+			// List<String> processedQuery = processor.processToken();
+			// //then put it in the cleaner
+			// String normalizedQuery = processor.normalizeType(processedQuery);
 
 			//implement the BooleanQueryParser
-			QueryComponent q = BooleanQueryParser.parseQuery(normalizedQuery);
+			QueryComponent q = BooleanQueryParser.parseQuery(query.toString());
 
 			//then we can search the index
 			//we use QueryComponent to get the postings, which uses index as the source
@@ -79,12 +98,11 @@ public class PositionalInvertedIndex {
 				//count the number of documents printed
 				count++;
 				System.out.println("Document " + corpus.getDocument(p.getDocumentId()).getTitle());
-				//print the positions of the term in the document
-				System.out.println("Positions: " + p.getPositions());
 			}
 			System.out.println(count + " documents found.");
+
+			scanner.close();
 		}
-		scanner.close();
 	}
 	
 	private static Index indexCorpus(DocumentCorpus corpus) {

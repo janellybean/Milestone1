@@ -9,29 +9,13 @@ public class PosInvertedIndex implements Index{
     //Map that should take in a String term and List with documentId and position
     private final Map<String, List<Posting>> iIndex;
     private final List<String> iVocabulary;
-    private final int iCorpusSize;
 
     /**
      * Constructs an empty index with given vocabulary set and corpus size.
      */
     public PosInvertedIndex() {
-        //initialize everything
         iIndex = new HashMap<>();
         iVocabulary = new ArrayList<>();
-        iCorpusSize = 0;
-    }
-
-    public PosInvertedIndex(Collection<String> vocabulary, int corpusSize) {
-        //initialize everything
-        iIndex = new HashMap<>();
-        iVocabulary = new ArrayList<>(vocabulary);
-        iCorpusSize = corpusSize;
-
-        Collections.sort(iVocabulary);
-
-        for(String term : iVocabulary) {
-            iIndex.put(term, new ArrayList<>());
-        }
     }
 
     //addTerm method must run in O(1) time
@@ -39,27 +23,43 @@ public class PosInvertedIndex implements Index{
     //edited so it tracks positions of terms in the document
     //each posting has the string term and a list of positions
     public void addTerm(String term, int docId, int position) {
-        //if the term is not in the vocabulary, add it
-        if(!iIndex.containsKey(term)) {
+        //list of all postings for the term
+        List<Posting> postings;
+
+        //if the term does not have a posting list, create one
+        if (!iIndex.containsKey(term)) {
+            postings = new ArrayList<>();
+
+            //the position is added to this posting
+            //position has to be added to the list of positions
+            List<Integer> positionList = new ArrayList<>();
+            positionList.add(position);
+            postings.add(new Posting(docId, positionList));
+
+            //add the term and posting list to the index
+            iIndex.put(term, postings);
             iVocabulary.add(term);
-            iIndex.put(term, new ArrayList<>());
-        }
+        } else {
+            //if the term has a posting list, get it and add the position
+            //the postings looks like (docId, [pos1, pos2, ...]), (docId, [pos1, pos2, ...])
+            postings = iIndex.get(term);
 
-        //get the list of postings for the term
-        List<Posting> postings = iIndex.get(term);
-        
-        //if the list is empty, add the posting
-        if(postings.isEmpty()) {
-            postings.add(new Posting(docId, position));
-            return;
-        }
-
-        //if the list is not empty, check if the posting already exists
-        //if it does, add the position to the posting
-        for(Posting p : postings) {
-            if(p.getDocumentId() == docId) {
-                p.addPosition(position);
-                return;
+            //check if the docId is already in the posting list using the last posting
+            //if it is, add the position to the list of positions
+            //if not, create a new posting and add it to the list of postings
+            if (postings.get(postings.size() - 1).getDocumentId() == docId) {
+                //get the last posting and add the position to the list of positions
+                postings.get(postings.size() - 1).getPositions().add(position);
+                //update the postings list
+                iIndex.put(term, postings);
+            } else {
+                //create a new posting if it is in a new doc
+                //and add it to the list of postings
+                List<Integer> positionList = new ArrayList<>();
+                positionList.add(position);
+                postings.add(new Posting(docId, positionList));
+                //update the postings list
+                iIndex.put(term, postings);
             }
         }
     }
@@ -71,12 +71,12 @@ public class PosInvertedIndex implements Index{
     public List<Posting> getPostings(String term) {
         //get the list of postings for the term from the inverted index
         //if the term is not found, return an empty list
-        List<Posting> results = iIndex.get(term);
-        if(results == null) {
-            return Collections.emptyList();
+        List<Posting> postings = iIndex.get(term);
+        if (postings == null) {
+            return new ArrayList<>();
+        } else {
+            return postings;
         }
-
-        return results;
     }
 
     /**
@@ -84,6 +84,6 @@ public class PosInvertedIndex implements Index{
 	 */
     @Override
     public List<String> getVocabulary() {
-        return Collections.unmodifiableList(iVocabulary);
+        return iVocabulary;
     }
 }
