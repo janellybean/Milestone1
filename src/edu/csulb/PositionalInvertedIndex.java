@@ -101,10 +101,15 @@ public class PositionalInvertedIndex {
 			//iterate through tokens
 			EnglishTokenStream ets = new EnglishTokenStream(d.getContent());
 			for (String token : ets.getTokens()) {
+				//process the token (aka clean it)
 				List<String> processedTokens = processor.processToken(token);
-				String normalizedToken = processor.normalizeType(processedTokens);
-				invertedIndex.addTerm(normalizedToken, d.getId(), position);
-				position++;
+				for (String finalToken : processedTokens) {
+					//normalize the token (aka stem it)
+					finalToken = processor.normalizeType(processedTokens);
+					//add the term to the inverted index
+					invertedIndex.addTerm(finalToken, d.getId(), position);
+					position++;
+				}
 			}
 		}
         return invertedIndex;
