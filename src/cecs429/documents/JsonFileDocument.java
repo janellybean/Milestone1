@@ -7,8 +7,10 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.*;
+import java.io.StringReader;
+import java.io.BufferedReader;
+
 
 /**
  * Represents a document that is saved as a json file in the local file system.
@@ -16,11 +18,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class JsonFileDocument implements FileDocument{
     private int mDocumentId;
     private Path mFilePath;
-
-    //declare the variables for the json file
-    private String title;
-    private String body;
-    private String url;
     
     /**
      * Constructs a JsonFileDocument with the given document ID representing the 
@@ -29,21 +26,6 @@ public class JsonFileDocument implements FileDocument{
     public JsonFileDocument(int id, Path absoluteFilePath) {
         mDocumentId = id;
         mFilePath = absoluteFilePath;
-
-        //read the json file
-        try{
-            //create an object mapper
-            ObjectMapper mapper = new ObjectMapper();
-            //read the json file
-            JsonNode jsonNode = mapper.readTree(absoluteFilePath.toFile());
-
-            //get the title, body, and url from the json file
-            this.title = jsonNode.get("title").asText();
-            this.body = jsonNode.get("body").asText();
-            this.url = jsonNode.get("url").asText();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
@@ -56,20 +38,40 @@ public class JsonFileDocument implements FileDocument{
         return mDocumentId;
     }
 
+    //read the json file (different from the TextFileDocument implementation)
     @Override
     public Reader getContent() {
+        String content = "";
         try {
-            return Files.newBufferedReader(mFilePath);
+            //read the json file
+            JsonNode json = new ObjectMapper().readTree(Files.newBufferedReader(mFilePath));
+            //get the fields of the json file
+            //it has "title" "body" and "url"
+            content = json.get("title").asText() + " " + json.get("body").asText() + " " + json.get("url").asText();
+
+            StringReader reader = new StringReader(content.toLowerCase());
+
+            //return the content of the json file
+            return reader;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    //get the title of the json file
     @Override
     public String getTitle() {
-        return mFilePath.getFileName().toString();
+        try {
+            //read the json file
+            JsonNode json = new ObjectMapper().readTree(Files.newBufferedReader(mFilePath));
+            //return the title of the json file
+            return json.get("title").asText();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
+    //load the json file
     public static FileDocument loadJsonFileDocument(Path absolutePath, int documentId) {
         return new JsonFileDocument(documentId, absolutePath);
     }

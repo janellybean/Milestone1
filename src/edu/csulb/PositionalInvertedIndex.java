@@ -19,43 +19,50 @@ import cecs429.indexing.PosInvertedIndex;
 import cecs429.text.BasicTokenProcessor;
 import cecs429.text.EnglishTokenStream;
 
+import cecs429.documents.Json.*;
+import java.nio.file.Files;
+
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.List;
+import java.util.ArrayList;
 
 public class PositionalInvertedIndex {
     public static void main(String[] args) {
 		// Create a DocumentCorpus to load .txt documents from the project directory.
-		DocumentCorpus corpus = DirectoryCorpus.loadTextDirectory(Paths.get("").toAbsolutePath(), ".txt");
+		// DocumentCorpus corpus = DirectoryCorpus.loadTextDirectory(Paths.get("").toAbsolutePath(), ".txt");
 
-		// //ask the user first for the filepath
-		// System.out.println("Enter the document path: ");
-		// Scanner fileScanner = new Scanner(System.in);
-		// String filePath = fileScanner.nextLine();
-		// System.out.println(filePath);
+		//ask the user first for the filepath
+		System.out.println("Enter the document path: ");
+		Scanner fileScanner = new Scanner(System.in);
+		String filePath = fileScanner.nextLine();
+		System.out.println(filePath);
 
-		// fileScanner.close();
+		fileScanner.close();
 
-		// // Create a DocumentCorpus to load documents from the project directory.
-		// DocumentCorpus corpus = DirectoryCorpus.loadDirectory(Paths.get(filePath).toAbsolutePath(), ".json");
+		//create list of file extensions
+		List<String> fileExtension = new ArrayList<String>();
+		fileExtension.add(".txt");
+		fileExtension.add(".json");
+
+		// Create a DocumentCorpus to load either json or txt documents from the project directory.
+		DocumentCorpus corpus = DirectoryCorpus.loadDirectory(Paths.get(filePath).toAbsolutePath(), fileExtension);
         
 		// Index the documents of the corpus.
 		Index index = indexCorpus(corpus);
+
+		//print out the index
+		
+
 		// Make a token processor just to process the query 
 		BasicTokenProcessor processor = new BasicTokenProcessor();
 
-
+		//ask the user
 		Scanner scanner = new Scanner(System.in);
-		while(true) {
-			//ask the user
-			System.out.println("Enter a term to search or type 'quit' to exit: ");
-			
-			String query = scanner.nextLine();
-			if(query.equals("quit")) {
-				break;
-			}
-
+		System.out.println("Enter a term to search or type 'quit' to exit: ");
+		String query = scanner.nextLine();
+		while(query != "quit") {
 			//use the process token on the query string
 			List<String> processedQuery = processor.processToken(query);
 			//then put it in the cleaner
@@ -90,7 +97,7 @@ public class PositionalInvertedIndex {
 		for (Document d : corpus.getDocuments()) {
 			//make count for the position of the term
 			int position = 1;
-			System.out.println("Found document " + d.getTitle());
+			//System.out.println("Found document " + d.getTitle());
 			//iterate through tokens
 			EnglishTokenStream ets = new EnglishTokenStream(d.getContent());
 			for (String token : ets.getTokens()) {

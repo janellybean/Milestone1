@@ -36,20 +36,10 @@ public class BasicTokenProcessor implements TokenProcessor {
 
 		//check the first or last character of the string
 		//if it is not alphanumeric, remove it
-		while(!Character.isLetterOrDigit(cleanToken.charAt(0)) || !Character.isLetterOrDigit(cleanToken.charAt(cleanToken.length() - 1))) {
-			if(!Character.isLetterOrDigit(cleanToken.charAt(0))) {
-				cleanToken = cleanToken.substring(1);
-			}
-			if(!Character.isLetterOrDigit(cleanToken.charAt(cleanToken.length() - 1))) {
-				cleanToken = cleanToken.substring(0, cleanToken.length() - 1);
-			}
-		}
+		cleanToken = token.replaceAll("^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$|[\"'/]", "");
 		
-		//remove all apostrophes or quotation marks (single or double quotes) from anywhere in the token
-		cleanToken = token.replaceAll("[\"']", "");
-
 		//makes all tokens lower case
-		cleanToken = token.toLowerCase();
+		cleanToken = cleanToken.toLowerCase();
 
 		//check for hyphen
 		if(cleanToken.contains("-")) {

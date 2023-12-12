@@ -158,10 +158,16 @@ public class DirectoryCorpus implements DocumentCorpus {
 	 * @param fileExtension The extension of the text documents to load, e.g., ".txt".
 	 * @param fileExtension The extension of the JSON documents to load ".json".
 	 */
-	// public static DirectoryCorpus loadDirectory(Path absolutePath, String jsonExtension) {
-	// 	DirectoryCorpus corpus = new DirectoryCorpus(absolutePath);
-	// 	//corpus.registerFileDocumentFactory(fileExtension, TextFileDocument::loadTextFileDocument);
-	// 	corpus.registerFileDocumentFactory(jsonExtension, JsonFileDocument::loadJsonFileDocument);
-	// 	return corpus;
-	// }
+	public static DirectoryCorpus loadDirectory(Path absolutePath, List<String> fileExtension) {
+		DirectoryCorpus corpus = new DirectoryCorpus(absolutePath);
+		
+		if(fileExtension.contains(".txt")) {
+			corpus.registerFileDocumentFactory(".txt", TextFileDocument::loadTextFileDocument);
+		}
+		if(fileExtension.contains(".json")) {
+			corpus.registerFileDocumentFactory(".json", JsonFileDocument::loadJsonFileDocument);
+		}
+		
+		return corpus;
+	}
 }
