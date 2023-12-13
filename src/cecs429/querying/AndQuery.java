@@ -1,7 +1,9 @@
 package cecs429.querying;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Collections;
 
 import cecs429.indexing.Index;
 import cecs429.indexing.Posting;
@@ -23,19 +25,46 @@ public class AndQuery implements QueryComponent {
 	
 	@Override
 	public List<Posting> getPostings(Index index) {
-		List<Posting> result = null;
-		
+		List<Posting> result = new ArrayList<>();
+		List<Integer> query = new ArrayList<>();
+
 		// TODO: program the merge for an AndQuery, by gathering the postings of the composed QueryComponents and
 		// intersecting the resulting postings.
-		for(QueryComponent component : mComponents) {
-			if(result == null)
-				return component.getPostings(index);
-			else {
-				List<Posting> temp = component.getPostings(index);
-				result.retainAll(temp);
+		for(int i = 0; i < mComponents.size(); i++) {
+			if(index.getVocabulary().contains(mComponents.get(i).toString()) && index.getVocabulary().contains(mComponents.get(i+1).toString())) {
+				List<Integer> q1 = new ArrayList<>();
+				List<Integer> q2 = new ArrayList<>();
+
+				for(Posting p: mComponents.get(i).getPostings(index)) {
+					q2.add(p.getDocumentId());
+				}
+
+				int x = 0;
+				int y = 0;
+
+				while(x < q1.size() && y < q2.size()) {
+					if(q1.get(x).equals(q2.get(y))) {
+						query.add(q1.get(x));
+						x++;
+						y++;
+					}
+					else if(q1.get(x) < q2.get(y)) {
+						x++;
+					}
+					else {
+						y++;
+					}
+				}
 			}
 		}
-		
+
+		// QueryComponent queryComponent = mComponents.get(0);
+		// List<Posting> postingsList = queryComponent.getPostings(index);
+		// for(Posting posting: postingsList){
+		// 	if (query.contains(posting.getDocumentId()))
+		// 			result.add(posting);
+		// }
+
 		return result;
 	}
 	

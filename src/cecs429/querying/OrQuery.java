@@ -1,6 +1,7 @@
 package cecs429.querying;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import cecs429.indexing.Index;
@@ -19,19 +20,29 @@ public class OrQuery implements QueryComponent {
 	
 	@Override
 	public List<Posting> getPostings(Index index) {
-		List<Posting> result = null;
-		
+		List<Posting> result = new ArrayList<>();
+
 		// TODO: program the merge for an OrQuery, by gathering the postings of the composed QueryComponents and
 		// unioning the resulting postings.
-		for(QueryComponent component : mComponents) {
-			if(result == null)
-				return component.getPostings(index);
+		for(QueryComponent component: mComponents) {
+			String andComponent = component.toString();
+
+			//checks the AND component of the query
+			if (andComponent.contains("AND")) {
+				List<Posting> andPostings = component.getPostings(index);
+				for (Posting posting : andPostings) {
+					if (!result.contains(posting))
+						result.add(posting);
+				}
+			}
 			else {
-				List<Posting> temp = component.getPostings(index);
-				result.addAll(temp);
+				List<Posting> orPostings = component.getPostings(index);
+				for (Posting posting : orPostings) {
+					if (!result.contains(posting))
+						result.add(posting);
+				}
 			}
 		}
-		
 		return result;
 	}
 	

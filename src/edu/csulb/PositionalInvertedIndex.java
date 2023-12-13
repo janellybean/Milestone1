@@ -33,75 +33,70 @@ public class PositionalInvertedIndex {
 		// Create a DocumentCorpus to load .txt documents from the project directory.
 		// DocumentCorpus corpus = DirectoryCorpus.loadTextDirectory(Paths.get("").toAbsolutePath(), ".txt");
 
-		//ask the user first for the filepath
-		System.out.println("Enter the document path: ");
-		Scanner fileScanner = new Scanner(System.in);
-		String filePath = fileScanner.nextLine();
+		List<String> fileNames = new ArrayList<>();
+		fileNames.add(".txt");
+		fileNames.add(".json");
 
-		fileScanner.close();
+		//ask the user for a directory path
+		System.out.println("Enter a directory path: ");
+		Scanner scanner = new Scanner(System.in);
+		String path = scanner.nextLine().toLowerCase();
 
-		//create list of file extensions
-		List<String> fileExtension = new ArrayList<String>();
-		fileExtension.add(".txt");
-		fileExtension.add(".json");
+		//load the directory 
+		DocumentCorpus corpus = DirectoryCorpus.loadDirectory(Paths.get(path).toAbsolutePath(), fileNames);
 
-		// Create a DocumentCorpus to load either json or txt documents from the project directory.
-		DocumentCorpus corpus = DirectoryCorpus.loadDirectory(Paths.get(filePath).toAbsolutePath(), fileExtension);
-        
-		// Index the documents of the corpus.
+		//index the corpus
+		System.out.println("Indexing corpus...");
 		Index index = indexCorpus(corpus);
+		System.out.println("Indexing is done.");
 
-		//print out the index
-		
+		//print the number of documents in the corpus
+		System.out.println("Number of documents in the corpus: " + corpus.getCorpusSize());
 
-		// Make a token processor just to process the query 
-		BasicTokenProcessor processor = new BasicTokenProcessor();
+		Boolean Flag = true;
+		Scanner input = new Scanner(System.in);
+		while(Flag)
+		{
+			System.out.println("Enter a query or type 'exit': ");
+			// Make a token processor just to process the query
+			BasicTokenProcessor processor = new BasicTokenProcessor();
+			StringBuilder query = new StringBuilder(input.nextLine().toLowerCase());
 
-		StringBuilder query;
-		while(true) {
-			System.out.println("Enter a term to search or type 'quit': ");
-			Scanner scanner = new Scanner(System.in);
-			query = new StringBuilder(scanner.nextLine());
-
-			//if the query is multiple words, split
-			String[] querySplit = query.toString().split(" ");
-
-			for (String queryWord : querySplit) {
-				//process the token (aka clean it)
-				List<String> processedTokens = processor.processToken(queryWord);
-				for (String finalToken : processedTokens) {
-					//normalize the token (aka stem it)
-					finalToken = processor.normalizeType(processedTokens);
-					//add the term to the inverted index
-					System.out.println(finalToken);
-				}
-			}
-			
-			//if the word is quit, then quit
-			if(query.toString().equals("quit")) {
-				break;
+			if(query.toString().equals("exit")) {
+				Flag = false;
 			}
 
-			// //use the process token on the query string
-			// List<String> processedQuery = processor.processToken();
-			// //then put it in the cleaner
-			// String normalizedQuery = processor.normalizeType(processedQuery);
+			// //split the query into array if it contains multiple words
+			// String[] words = query.toString().split(" ");
+			// query = new StringBuilder();
+			// for(String word: words){
+			// 	//process the token (aka clean it)
+			// 	List<String> processedTokens = processor.processToken(word);
+			// 	//normalize the token (aka stem it)
+			// 	String finalToken = processor.normalizeType(processedTokens);
+			// 	query.append(" ").append(finalToken);
+			// }
 
-			//implement the BooleanQueryParser
 			QueryComponent q = BooleanQueryParser.parseQuery(query.toString());
-
-			//then we can search the index
-			//we use QueryComponent to get the postings, which uses index as the source
-			//q.getPostings(index);
-			int count = 0;
-			for (Posting p : q.getPostings(index)) {
-				//count the number of documents printed
-				count++;
-				System.out.println("Document " + corpus.getDocument(p.getDocumentId()).getTitle());
+			List<Posting> queryPostings = q.getPostings(index);
+			int postSize = queryPostings.size();
+			
+			//if there are no postings for the query
+			if(postSize == 0)
+			{
+				System.out.println("No documents found for the query:" + query.toString() + "\n");
 			}
-			System.out.println(count + " documents found.");
-
-			scanner.close();
+			else {
+				//print if there are postings
+				for(Posting p : queryPostings){
+					System.out.println(corpus.getDocument(p.getDocumentId()).getTitle() + " Doc ID: " + p.getDocumentId());
+				}
+				System.out.println("There are " + postSize + " postings returned for query:" + query);
+			}
+			//if the word is exit, then exit the program
+			if(query.toString().equals("exit")) {
+				Flag = false;
+			}
 		}
 	}
 	

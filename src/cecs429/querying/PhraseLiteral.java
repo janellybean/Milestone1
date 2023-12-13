@@ -27,7 +27,29 @@ public class PhraseLiteral implements QueryComponent {
 		
 	@Override
 	public List<Posting> getPostings(Index index) {
-		return null;
+		List<Posting> result = new ArrayList<>();
+
+		List<Integer> query1  = new ArrayList<>();
+		List<Integer> query2  = new ArrayList<>();
+
+		// TODO: program this method. Retrieve the postings for the individual terms in the phrase,
+		// and positional merge them together.
+		for(QueryComponent component : mComponents){
+			if(query1.isEmpty()) {
+				for (Posting posting : index.getPostings(component.toString())) {
+					query1.add(posting.getDocumentId());
+				}
+				result.addAll(index.getPostings(component.toString()));
+				//skip to the next component
+				continue;
+			}
+			for (Posting posting : index.getPostings(component.toString())) {
+				query2.add(posting.getDocumentId());
+			}
+
+		}
+		return result;
+		// return null;
 		// TODO: program this method. Retrieve the postings for the individual terms in the phrase,
 		// and positional merge them together.
 	}

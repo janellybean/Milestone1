@@ -11,10 +11,16 @@ public class Posting {
 	private int mDocumentId;
 	private List<Integer> mPositions;
 
-	public Posting(int documentId, List<Integer> positions) {
+	public Posting(int documentId, int position) {
 		mDocumentId = documentId;
-		mPositions = positions;
+		mPositions = new ArrayList<>();
+		mPositions.add(position);
 	}
+
+	public Posting(int documentId) {
+		mDocumentId = documentId;
+	}
+
 	
 	public int getDocumentId() {
 		return mDocumentId;
