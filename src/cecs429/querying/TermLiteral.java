@@ -21,7 +21,16 @@ public class TermLiteral implements QueryComponent {
 	
 	@Override
 	public List<Posting> getPostings(Index index) {
-		return index.getPostings(mTerm);
+		// process and stem the mTerm string.
+		BasicTokenProcessor processor = new BasicTokenProcessor();
+		EnglishTokenStream ets = new EnglishTokenStream(mTerm);
+
+		// process the term using the BasicTokenProcessor
+		String cleanedTerm = processor.processTokenStream(mTerm);
+		cleanedTerm = processor.stemToken(cleanedTerm);
+		cleanedTerm = processor.normalizeToken(cleanedTerm);
+
+		return index.getPostings(cleanedTerm);
 	}
 	
 	@Override
