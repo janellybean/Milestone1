@@ -19,9 +19,6 @@ import cecs429.indexing.PosInvertedIndex;
 import cecs429.text.BasicTokenProcessor;
 import cecs429.text.EnglishTokenStream;
 
-import cecs429.documents.Json.*;
-import java.nio.file.Files;
-
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Scanner;
@@ -57,16 +54,16 @@ public class PositionalInvertedIndex {
 		Scanner input = new Scanner(System.in);
 		while(Flag)
 		{
-			System.out.println("Enter a query or type 'exit': ");
+			System.out.print("Enter a query or type 'exit': ");
 			// Make a token processor just to process the query
-			BasicTokenProcessor processor = new BasicTokenProcessor();
+			//BasicTokenProcessor processor = new BasicTokenProcessor();
 			StringBuilder query = new StringBuilder(input.nextLine().toLowerCase());
 
 			if(query.toString().equals("exit")) {
 				Flag = false;
 			}
 
-			// //split the query into array if it contains multiple words
+			//split the query into array if it contains multiple words
 			// String[] words = query.toString().split(" ");
 			// query = new StringBuilder();
 			// for(String word: words){
@@ -84,20 +81,21 @@ public class PositionalInvertedIndex {
 			//if there are no postings for the query
 			if(postSize == 0)
 			{
-				System.out.println("No documents found for the query:" + query.toString() + "\n");
+				System.out.println("No documents found for the query.\n");
 			}
 			else {
 				//print if there are postings
 				for(Posting p : queryPostings){
 					System.out.println(corpus.getDocument(p.getDocumentId()).getTitle() + " Doc ID: " + p.getDocumentId());
 				}
-				System.out.println("There are " + postSize + " postings returned for query:" + query);
+				System.out.println("There are " + postSize + " postings returned.\n");
 			}
 			//if the word is exit, then exit the program
 			if(query.toString().equals("exit")) {
 				Flag = false;
 			}
 		}
+		input.close();
 	}
 	
 	private static Index indexCorpus(DocumentCorpus corpus) {

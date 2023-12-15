@@ -154,17 +154,13 @@ public class PosInvertedIndex implements Index{
         //if the term is not found, return an empty list
 
         List<Posting> postings = new ArrayList<>();
-        for(List<Object> pair : iIndex.get(term)){
+        if (iIndex.get(term) != null) {
+            for(List<Object> pair : iIndex.get(term)) {
             postings.add((Posting) pair.get(0));
+            }
         }
-        return postings;
 
-        // List<Posting> postings = iIndex.get(term);
-        // if (postings == null) {
-        //     return new ArrayList<>();
-        // } else {
-        //     return postings;
-        // }
+        return postings;
     }
 
     /**

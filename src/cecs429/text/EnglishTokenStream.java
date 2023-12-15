@@ -36,7 +36,7 @@ public class EnglishTokenStream implements TokenStream {
 	public EnglishTokenStream(Reader inputStream) {
 		mReader = inputStream;
 	}
-	
+
 	@Override
 	public Iterable<String> getTokens() {
 		// Fancy trick to convert an Iterator to an Iterable.
