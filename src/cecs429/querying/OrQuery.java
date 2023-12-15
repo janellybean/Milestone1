@@ -22,26 +22,27 @@ public class OrQuery implements QueryComponent {
 	public List<Posting> getPostings(Index index) {
 		List<Posting> result = new ArrayList<>();
 
-		// TODO: program the merge for an OrQuery, by gathering the postings of the composed QueryComponents and
+		//program the merge for an OrQuery, by gathering the postings of the composed QueryComponents and
 		// unioning the resulting postings.
 		for(QueryComponent component: mComponents) {
-			String andComponent = component.toString();
+			// String andComponent = component.toString();
 
 			//checks the AND component of the query
-			if (andComponent.contains("AND")) {
-				List<Posting> andPostings = component.getPostings(index);
-				for (Posting posting : andPostings) {
-					if (!result.contains(posting))
-						result.add(posting);
-				}
-			}
-			else {
-				List<Posting> orPostings = component.getPostings(index);
-				for (Posting posting : orPostings) {
-					if (!result.contains(posting))
-						result.add(posting);
-				}
-			}
+			// if (andComponent.contains("AND")) {
+			// 	List<Posting> andPostings = component.getPostings(index);
+			// 	for (Posting posting : andPostings) {
+			// 		if (!result.contains(posting))
+			// 			result.add(posting);
+			// 	}
+			// }
+			// else {
+				// List<Posting> orPostings = component.getPostings(index);
+				// for (Posting posting : orPostings) {
+				// 	if (!result.contains(posting))
+				// 		result.add(posting);
+				// }
+			// }
+			result.addAll(component.getPostings(index));
 		}
 		return result;
 	}

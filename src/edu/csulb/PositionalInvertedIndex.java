@@ -58,6 +58,7 @@ public class PositionalInvertedIndex {
 			//BasicTokenProcessor processor = new BasicTokenProcessor();
 			String query = input.nextLine().toLowerCase();
 
+			System.out.println("Query: " + query);
 			if(query.equals("exit")) {
 				break;
 			}
@@ -70,7 +71,6 @@ public class PositionalInvertedIndex {
 				System.out.println(corpus.getDocument(p.getDocumentId()).getTitle() + " Doc ID: " + p.getDocumentId());
 			}
 			System.out.println("There are " + postSize + " postings returned.\n");
-		
 		}
 		input.close();
 		scanner.close();

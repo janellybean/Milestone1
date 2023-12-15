@@ -50,18 +50,40 @@ public class AndQuery implements QueryComponent {
 			//aka while lists are not empty yet
 			//compare the two lists and add the postings to the first list if they are the same posting
 			while(x < q1.size() && y < q2.size()) {
-				if(q1.get(x).equals(q2.get(y))) {
-					query.add(q1.get(x));
-					x++;
-					y++;
+				//make a NotQuery instance in case there is a not 
+				NotQuery not = new NotQuery(mComponents.get(i));
+				//if the not is positive, aka there is no not in the query
+				if(not.isPositive()) {
+					if(q1.get(x).equals(q2.get(y))) {
+						query.add(q1.get(x));
+						x++;
+						y++;
+					}
+					//if the postings are not the same, increment the counter of the list with the smaller posting
+					//aka the list for the word that has less postings is incremented
+					else if(q1.get(x) < q2.get(y)) {   
+						x++;
+					}
+					else {
+						y++;
+					}
 				}
-				//if the postings are not the same, increment the counter of the list with the smaller posting
-				//aka the list for the word that has less postings is incremented
-				else if(q1.get(x) < q2.get(y)) {   
-					x++;
-				}
+				//since there is a not, remove all the overlapping postings
 				else {
-					y++;
+					i += 1; //increment the counter to get the next component
+					if(q1.get(x).equals(q2.get(y))) {
+						query.remove(q1.get(x));
+						x++;
+						y++;
+					}
+					//if the postings are not the same, increment the counter of the list with the smaller posting
+					//aka the list for the word that has less postings is incremented
+					else if(q1.get(x) < q2.get(y)) {   
+						x++;
+					}
+					else {
+						y++;
+					}
 				}
 			}
 		}
