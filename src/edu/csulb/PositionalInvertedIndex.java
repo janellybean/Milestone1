@@ -50,9 +50,8 @@ public class PositionalInvertedIndex {
 		//print the number of documents in the corpus
 		System.out.println("Number of documents in the corpus: " + corpus.getCorpusSize());
 
-		Boolean Flag = true;
 		Scanner input = new Scanner(System.in);
-		while(Flag)
+		while(true)
 		{
 			System.out.print("Enter a query or type 'exit': ");
 			// Make a token processor just to process the query
@@ -60,7 +59,7 @@ public class PositionalInvertedIndex {
 			StringBuilder query = new StringBuilder(input.nextLine().toLowerCase());
 
 			if(query.toString().equals("exit")) {
-				Flag = false;
+				break;
 			}
 
 			//split the query into array if it contains multiple words
@@ -90,12 +89,9 @@ public class PositionalInvertedIndex {
 				}
 				System.out.println("There are " + postSize + " postings returned.\n");
 			}
-			//if the word is exit, then exit the program
-			if(query.toString().equals("exit")) {
-				Flag = false;
-			}
 		}
 		input.close();
+		scanner.close();
 	}
 	
 	private static Index indexCorpus(DocumentCorpus corpus) {

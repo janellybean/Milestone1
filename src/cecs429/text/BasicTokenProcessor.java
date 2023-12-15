@@ -1,14 +1,7 @@
 package cecs429.text;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-//import org.tartarus.snowball.ext.PorterStemmer;
-//import org.apache.lucene.analysis.en.PorterStemmer;
-//import the portStemmer.java file
-
-import cecs429.text.Stemmer;
 
 
 /**
