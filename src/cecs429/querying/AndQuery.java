@@ -28,43 +28,43 @@ public class AndQuery implements QueryComponent {
 		List<Posting> result = new ArrayList<>();
 		List<Integer> query = new ArrayList<>();
 
-		// TODO: program the merge for an AndQuery, by gathering the postings of the composed QueryComponents and
+		// program the merge for an AndQuery, by gathering the postings of the composed QueryComponents and
 		// intersecting the resulting postings.
+
+		//this loop is to get the postings for each component
 		for(int i = 0; i < mComponents.size(); i++) {
-			if(index.getVocabulary().contains(mComponents.get(i).toString()) && index.getVocabulary().contains(mComponents.get(i+1).toString())) {
-				List<Integer> q1 = new ArrayList<>();
-				List<Integer> q2 = new ArrayList<>();
+			//two lists for the two components
+			List<Integer> q1 = new ArrayList<>();
+			List<Integer> q2 = new ArrayList<>();
 
-				for(Posting p: mComponents.get(i).getPostings(index)) {
-					q2.add(p.getDocumentId());
+			//get the postings for the current component
+			for(Posting p: mComponents.get(i).getPostings(index)) {
+				q2.add(p.getDocumentId());
+			}
+
+			//counters for the two lists
+			int x = 0;
+			int y = 0;
+
+			//while the counters are less than the size of the lists
+			//aka while lists are not empty yet
+			//compare the two lists and add the postings to the first list if they are the same posting
+			while(x < q1.size() && y < q2.size()) {
+				if(q1.get(x).equals(q2.get(y))) {
+					query.add(q1.get(x));
+					x++;
+					y++;
 				}
-
-				int x = 0;
-				int y = 0;
-
-				while(x < q1.size() && y < q2.size()) {
-					if(q1.get(x).equals(q2.get(y))) {
-						query.add(q1.get(x));
-						x++;
-						y++;
-					}
-					else if(q1.get(x) < q2.get(y)) {
-						x++;
-					}
-					else {
-						y++;
-					}
+				//if the postings are not the same, increment the counter of the list with the smaller posting
+				//aka the list for the word that has less postings is incremented
+				else if(q1.get(x) < q2.get(y)) {   
+					x++;
+				}
+				else {
+					y++;
 				}
 			}
 		}
-
-		// QueryComponent queryComponent = mComponents.get(0);
-		// List<Posting> postingsList = queryComponent.getPostings(index);
-		// for(Posting posting: postingsList){
-		// 	if (query.contains(posting.getDocumentId()))
-		// 			result.add(posting);
-		// }
-
 		return result;
 	}
 	

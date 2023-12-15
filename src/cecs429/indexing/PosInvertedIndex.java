@@ -67,8 +67,9 @@ public class PosInvertedIndex implements Index{
 		}
         //add new posting list to the index of postings
 		iIndex.put(term, postingList);
-		
-        
+            
+        //add the term to the vocabulary
+        iVocabulary.add(term);
     }
 
     /**
@@ -84,9 +85,6 @@ public class PosInvertedIndex implements Index{
             for(Posting p : iIndex.get(term)){
                 postingList.add(p);
             }
-        }
-        else {
-            System.out.println("No postings found for the term.\n");
         }
 
         return postingList;

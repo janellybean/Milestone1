@@ -56,39 +56,21 @@ public class PositionalInvertedIndex {
 			System.out.print("Enter a query or type 'exit': ");
 			// Make a token processor just to process the query
 			//BasicTokenProcessor processor = new BasicTokenProcessor();
-			StringBuilder query = new StringBuilder(input.nextLine().toLowerCase());
+			String query = input.nextLine().toLowerCase();
 
-			if(query.toString().equals("exit")) {
+			if(query.equals("exit")) {
 				break;
 			}
 
-			//split the query into array if it contains multiple words
-			// String[] words = query.toString().split(" ");
-			// query = new StringBuilder();
-			// for(String word: words){
-			// 	//process the token (aka clean it)
-			// 	List<String> processedTokens = processor.processToken(word);
-			// 	//normalize the token (aka stem it)
-			// 	String finalToken = processor.normalizeType(processedTokens);
-			// 	query.append(" ").append(finalToken);
-			// }
-
-			QueryComponent q = BooleanQueryParser.parseQuery(query.toString());
+			QueryComponent q = BooleanQueryParser.parseQuery(query);
 			List<Posting> queryPostings = q.getPostings(index);
 			int postSize = queryPostings.size();
 			
-			//if there are no postings for the query
-			if(postSize == 0)
-			{
-				System.out.println("No documents found for the query.\n");
+			for(Posting p : queryPostings){
+				System.out.println(corpus.getDocument(p.getDocumentId()).getTitle() + " Doc ID: " + p.getDocumentId());
 			}
-			else {
-				//print if there are postings
-				for(Posting p : queryPostings){
-					System.out.println(corpus.getDocument(p.getDocumentId()).getTitle() + " Doc ID: " + p.getDocumentId());
-				}
-				System.out.println("There are " + postSize + " postings returned.\n");
-			}
+			System.out.println("There are " + postSize + " postings returned.\n");
+		
 		}
 		input.close();
 		scanner.close();
