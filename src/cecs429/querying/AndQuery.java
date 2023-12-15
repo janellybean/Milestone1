@@ -26,68 +26,70 @@ public class AndQuery implements QueryComponent {
 	@Override
 	public List<Posting> getPostings(Index index) {
 		List<Posting> result = new ArrayList<>();
-		List<Integer> query = new ArrayList<>();
 
 		// program the merge for an AndQuery, by gathering the postings of the composed QueryComponents and
 		// intersecting the resulting postings.
 
-		//this loop is to get the postings for each component
-		for(int i = 0; i < mComponents.size(); i++) {
-			//two lists for the two components
-			List<Integer> q1 = new ArrayList<>();
-			List<Integer> q2 = new ArrayList<>();
+		// get the first component's postings
+		result = mComponents.get(0).getPostings(index);
+		// then intersect it with the next component
+		// and then use this as a query to intersect with the next component
+		// then return the result
 
-			//get the postings for the current component
-			for(Posting p: mComponents.get(i).getPostings(index)) {
-				q2.add(p.getDocumentId());
-			}
+        if (mComponents.size() > 1) {
+            for (int i = 1; i < mComponents.size(); i++) {
+				//add the two postings together if there is more than one component
+				//set p1 as the result (it is for after merging the first two in case)
+				List<Posting> p1 = result;
+				//the second posting will be the next component
+				List<Posting> p2 = mComponents.get(i).getPostings(index);
+				//new result which contains the intersection of these two postings
+				result = new ArrayList<>();
 
-			//counters for the two lists
-			int x = 0;
-			int y = 0;
-
-			//while the counters are less than the size of the lists
-			//aka while lists are not empty yet
-			//compare the two lists and add the postings to the first list if they are the same posting
-			while(x < q1.size() && y < q2.size()) {
-				//make a NotQuery instance in case there is a not 
-				NotQuery not = new NotQuery(mComponents.get(i));
-				//if the not is positive, aka there is no not in the query
-				if(not.isPositive()) {
-					if(q1.get(x).equals(q2.get(y))) {
-						query.add(q1.get(x));
+				int x = 0;
+				int y = 0;
+				
+				//while the counters are less than the size of the lists
+				//compare the result using the docId for these postings
+				while (x < p1.size() && y < p2.size()) {
+					if (p1.get(x).getDocumentId() == p2.get(y).getDocumentId()) {
+						result.add(p1.get(x));
 						x++;
 						y++;
-					}
-					//if the postings are not the same, increment the counter of the list with the smaller posting
-					//aka the list for the word that has less postings is incremented
-					else if(q1.get(x) < q2.get(y)) {   
+					} else if (p1.get(x).getDocumentId() < p2.get(y).getDocumentId()) {
 						x++;
-					}
-					else {
+					} else {
 						y++;
 					}
 				}
-				//since there is a not, remove all the overlapping postings
-				else {
-					i += 1; //increment the counter to get the next component
-					if(q1.get(x).equals(q2.get(y))) {
-						query.remove(q1.get(x));
-						x++;
-						y++;
-					}
-					//if the postings are not the same, increment the counter of the list with the smaller posting
-					//aka the list for the word that has less postings is incremented
-					else if(q1.get(x) < q2.get(y)) {   
-						x++;
-					}
-					else {
-						y++;
-					}
-				}
-			}
-		}
-		return result;
+            }
+        }
+
+        return result;
+
+		// //this loop is to get the postings for each component
+		// for(int i = 0; i < mComponents.size(); i++) {
+		// 	//two lists for the two components
+		// 	List<Integer> q1 = new ArrayList<>();
+		// 	List<Integer> q2 = new ArrayList<>();
+
+		// 	//get the postings for the current component
+		// 	for(Posting p: mComponents.get(i).getPostings(index)) {
+		// 		q1.add(p.getDocumentId());
+		// 	}
+
+		// 	//counters for the two lists
+		// 	int x = 0;
+		// 	int y = 0;
+
+		// 	//while the counters are less than the size of the lists
+		// 	//aka while lists are not empty yet
+		// 	//compare the two lists and add the postings to the first list if they are the same posting
+		// 	
+		// }
+		
+
+		// return result;
 	}
 	
 	@Override

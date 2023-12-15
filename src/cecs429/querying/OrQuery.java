@@ -22,28 +22,49 @@ public class OrQuery implements QueryComponent {
 	public List<Posting> getPostings(Index index) {
 		List<Posting> result = new ArrayList<>();
 
-		//program the merge for an OrQuery, by gathering the postings of the composed QueryComponents and
-		// unioning the resulting postings.
-		for(QueryComponent component: mComponents) {
-			// String andComponent = component.toString();
+		result = mComponents.get(0).getPostings(index);
 
-			//checks the AND component of the query
-			// if (andComponent.contains("AND")) {
-			// 	List<Posting> andPostings = component.getPostings(index);
-			// 	for (Posting posting : andPostings) {
-			// 		if (!result.contains(posting))
-			// 			result.add(posting);
-			// 	}
-			// }
-			// else {
-				// List<Posting> orPostings = component.getPostings(index);
-				// for (Posting posting : orPostings) {
-				// 	if (!result.contains(posting))
-				// 		result.add(posting);
-				// }
-			// }
-			result.addAll(component.getPostings(index));
-		}
+		if (mComponents.size() > 1) {
+            for (int i = 1; i < mComponents.size(); i++) {
+				//add the two postings together if there is more than one component
+				//set p1 as the result (it is for after merging the first two in case)
+				List<Posting> p1 = result;
+				//the second posting will be the next component
+				List<Posting> p2 = mComponents.get(i).getPostings(index);
+				//new result which contains the intersection of these two postings
+				result = new ArrayList<>();
+
+				int x = 0;
+				int y = 0;
+				
+				//if the postings are the same, add it
+				//if the posting is smaller, add the smaller
+				//if there is a posting that still has more, add the rest
+				while (x < p1.size() && y < p2.size()) {
+					if (p1.get(x).getDocumentId() == p2.get(y).getDocumentId()) {
+						result.add(p1.get(x));
+						x++;
+						y++;
+					} else if (p1.get(x).getDocumentId() < p2.get(y).getDocumentId()) {
+						result.add(p1.get(x));
+						x++;
+					} else {
+						result.add(p2.get(y));
+						y++;
+					}
+				}
+				//if there are still postings left, add them
+				while(x < p1.size()) {
+					result.add(p1.get(x));
+					x++;
+				}
+				while(y < p2.size()) {
+					result.add(p2.get(y));
+					y++;
+				}
+				
+            }
+        }
 		return result;
 	}
 	
